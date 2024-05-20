@@ -3,7 +3,7 @@ import itertools
 import math
 
 def distanciaEuclidiana(x1, y1, x2, y2):
-    return math.sqrt(pow((x2 - x1),2) + pow((y2 - y1),2))
+    return math.sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2))
 
 def dijkstra(puntosPlano, empezar):
     distances = {node: float('infinity') for node in puntosPlano}
@@ -27,7 +27,7 @@ def encontrarCamino(graph, start, end):
     min_cost = float('infinity')
     best_path = None
 
-    for intermediates in itertools.permutations(nodes, 2):
+    for intermediates in itertools.permutations(nodes):
         path_cost = 0
         current_start = start
         for node in intermediates + (end,):
@@ -40,24 +40,24 @@ def encontrarCamino(graph, start, end):
 
     return min_cost, best_path
 
-# Coordenadas de los puntos
-coordenadas = {
-    'P1': (1, 1),
-    'P2': (2, 6),
-    'P3': (4, 7),
-    'P4': (6, 4),
-    'P5': (5, -2)
-}
+def crearGrafo(coordenadas):
+    puntosPlano = {point: {} for point in coordenadas}
+    nodos = list(itertools.permutations(coordenadas.keys(), 2))
+    for (p1, p2) in nodos:
+        distancia = distanciaEuclidiana(*coordenadas[p1], *coordenadas[p2])
+        puntosPlano[p1][p2] = distancia
+    return puntosPlano
 
-# Crear el grafo con las distancias Euclidianas
-puntosPlano = {point: {} for point in coordenadas}
-nodos = [('P1', 'P2'), ('P1', 'P3'), ('P1', 'P4'), ('P1', 'P5'), ('P2', 'P1'), ('P2', 'P3'), ('P2', 'P4'), ('P2', 'P5'), ('P3', 'P1'), ('P3', 'P2'), ('P3', 'P4'), ('P3', 'P5'), ('P4', 'P1'), ('P4', 'P2'), ('P4', 'P3'),('P4', 'P5'), ('P5', 'P1'), ('P5', 'P2'), ('P5', 'P3'),('P5', 'P4')]
+coordenadas = {}
+for i in range(1, 6):
+    x = float(input(f"Ingrese la coordenada x del punto P{i}: "))
+    y = float(input(f"Ingrese la coordenada y del punto P{i}: "))
+    coordenadas[f'P{i}'] = (x, y)
 
-for (p1, p2) in nodos:
-    distancia = distanciaEuclidiana(*coordenadas[p1], *coordenadas[p2])
-    puntosPlano[p1][p2] = distancia
-    puntosPlano[p2][p1] = distancia
+start = input("Ingrese el punto de inicio (P1, P2, P3, P4, P5): ")
+end = input("Ingrese el punto final (P1, P2, P3, P4, P5): ")
 
-# Calcula el mejor camino desde P1 a P5
-cost, path = encontrarCamino(puntosPlano, 'P2', 'P1')
+puntosPlano = crearGrafo(coordenadas)
+
+cost, path = encontrarCamino(puntosPlano, start, end)
 print(f"El camino más corto es {path} con una distancia de {cost:.2f} cm")
